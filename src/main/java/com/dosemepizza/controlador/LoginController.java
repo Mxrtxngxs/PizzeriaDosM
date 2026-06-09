@@ -48,7 +48,6 @@ public class LoginController {
             etiquetaMensaje.setText(ex.getMessage());
         } catch (Exception ex) {
             etiquetaMensaje.setText("Error inesperado al iniciar sesion");
-            ex.printStackTrace();
         }
     }
 

@@ -21,6 +21,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.opencsv.CSVWriter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -118,12 +127,63 @@ public class PedidosController {
 
     @FXML
     private void manejarExportarCsv() {
-        mostrarInfo("Funcion de exportar CSV pendiente de implementar con OpenCSV");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exportar Pedidos a CSV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos CSV (*.csv)", "*.csv"));
+        File file = fileChooser.showSaveDialog(tablaPedidos.getScene().getWindow());
+
+        if (file != null) {
+            try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+                writer.writeNext(new String[]{"Cliente", "Fecha", "Total", "Estatus"});
+                for (Pedido p : pedidos) {
+                    writer.writeNext(new String[]{
+                            p.getCliente() != null ? p.getCliente().getNombreCompleto() : "",
+                            p.getFechaPedido() != null ? p.getFechaPedido().format(FORMATO_FECHA) : "",
+                            String.valueOf(p.getTotal()),
+                            p.getEstatus().name()
+                    });
+                }
+                mostrarInfo("Pedidos exportados a CSV correctamente.");
+            } catch (IOException e) {
+                mostrarError("Error al exportar a CSV: " + e.getMessage());
+            }
+        }
     }
 
     @FXML
     private void manejarExportarPdf() {
-        mostrarInfo("Funcion de exportar PDF pendiente de implementar con iText");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exportar Pedidos a PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF (*.pdf)", "*.pdf"));
+        File file = fileChooser.showSaveDialog(tablaPedidos.getScene().getWindow());
+
+        if (file != null) {
+            Document documento = new Document();
+            try {
+                PdfWriter.getInstance(documento, new FileOutputStream(file));
+                documento.open();
+
+                PdfPTable tabla = new PdfPTable(4);
+                tabla.setWidthPercentage(100);
+                tabla.addCell("Cliente");
+                tabla.addCell("Fecha");
+                tabla.addCell("Total");
+                tabla.addCell("Estatus");
+
+                for (Pedido p : pedidos) {
+                    tabla.addCell(p.getCliente() != null ? p.getCliente().getNombreCompleto() : "");
+                    tabla.addCell(p.getFechaPedido() != null ? p.getFechaPedido().format(FORMATO_FECHA) : "");
+                    tabla.addCell("$" + p.getTotal());
+                    tabla.addCell(p.getEstatus().name());
+                }
+
+                documento.add(tabla);
+                documento.close();
+                mostrarInfo("Pedidos exportados a PDF correctamente.");
+            } catch (Exception e) {
+                mostrarError("Error al exportar a PDF: " + e.getMessage());
+            }
+        }
     }
 
     private void abrirDialogoPedido(Pedido pedido) {

@@ -22,6 +22,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import java.util.List;
 import java.util.Optional;
@@ -123,7 +129,38 @@ public class ProductosController {
 
     @FXML
     private void manejarGenerarReporte() {
-        mostrarInfo("Funcion de reporte PDF pendiente de implementar con iText");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exportar Reporte de Productos a PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF (*.pdf)", "*.pdf"));
+        File file = fileChooser.showSaveDialog(tablaProductos.getScene().getWindow());
+
+        if (file != null) {
+            Document documento = new Document();
+            try {
+                PdfWriter.getInstance(documento, new FileOutputStream(file));
+                documento.open();
+
+                PdfPTable tabla = new PdfPTable(4);
+                tabla.setWidthPercentage(100);
+                tabla.addCell("Codigo");
+                tabla.addCell("Nombre");
+                tabla.addCell("Precio");
+                tabla.addCell("Cantidad");
+
+                for (Producto p : productos) {
+                    tabla.addCell(p.getCodigo());
+                    tabla.addCell(p.getNombre());
+                    tabla.addCell("$" + p.getPrecio());
+                    tabla.addCell(String.valueOf(p.getCantidad()));
+                }
+
+                documento.add(tabla);
+                documento.close();
+                mostrarInfo("Reporte generado correctamente.");
+            } catch (Exception e) {
+                mostrarError("Error al exportar a PDF: " + e.getMessage());
+            }
+        }
     }
 
     private void abrirDialogo(Producto producto) {
