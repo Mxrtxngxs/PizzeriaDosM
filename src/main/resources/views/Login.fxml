@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dosemepizza.controlador.LoginController">
+   <padding>
+      <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+   </padding>
+
+   <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Inicio de Sesión" />
+   <Label style="-fx-font-size: 14px; -fx-text-fill: gray;" text="Italia Pizza" />
+
+   <VBox alignment="CENTER_LEFT" maxWidth="250.0" spacing="5.0">
+      <Label text="Usuario:" />
+      <TextField fx:id="campoUsuario" promptText="Ingrese su usuario" />
+   </VBox>
+
+   <VBox alignment="CENTER_LEFT" maxWidth="250.0" spacing="5.0">
+      <Label text="Contraseña:" />
+      <PasswordField fx:id="campoContrasena" promptText="Ingrese su contraseña" />
+   </VBox>
+
+   <Label fx:id="etiquetaMensaje" alignment="CENTER" maxWidth="250.0" textFill="RED" wrapText="true" />
+
+   <Button fx:id="botonEntrar" onAction="#manejarEntrar" prefWidth="150.0" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;" text="Entrar" />
+</VBox>
